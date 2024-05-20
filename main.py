@@ -7,7 +7,6 @@ import gc
 import dht
 from machine import Pin
 
-# Configuration
 project_id = 'dryvent-dceb6'
 settings_path = 'settings/thresholds'
 sensor_path = 'sensor/current'
@@ -15,26 +14,17 @@ base_url = 'https://firestore.googleapis.com/v1/projects/{}/databases/(default)/
 settings_url = '{}/{}'.format(base_url, settings_path)
 sensor_url = '{}/{}'.format(base_url, sensor_path)
 headers = {'Content-Type': 'application/json'}
-
-# WiFi credentials
 ssid = 'Datenautobahn'
 password = 'Ausfahrt666'
-
-# GPIO Setup
-vent_pin = Pin(22, Pin.OUT)  # Adjust pin number as needed
+vent_pin = Pin(22, Pin.OUT)
 vent_pin_n = Pin(21, Pin.OUT)
-vent_pin.value(0)  # Ensure vent is initially off
+vent_pin.value(0)
 vent_pin_n.value(0)
-
-# DHT11 Sensor Setup
-dht_pin = Pin(14)  # Adjust pin number as needed
+dht_pin = Pin(14)
 dht_sensor = dht.DHT11(dht_pin)
-
-# Define the pin for the LED
 led_pin = machine.Pin("LED", machine.Pin.OUT)
 led_time = 1
 
-# Initial states
 max_humidity = 0
 min_humidity = 0
 max_temperature = 0
@@ -43,11 +33,8 @@ override_on = False
 vent_on = False
 is_manual_vent_on = False
 timeout = 900000  # 15 min timeout for reaching min threshold
-start_time = utime.ticks_ms()  # Start time for timeout
-
-# Connect to Wi-Fi
+start_time = utime.ticks_ms()
 wifi = network.WLAN(network.STA_IF)
-
 
 def connectToWifi():
     while not wifi.isconnected():
@@ -137,7 +124,7 @@ def control_ventilator(humidity, temperature):
         vent_on = True
         vent_pin.value(1)
         vent_pin_n.value(1)
-        start_time = current_time  # Reset timeout timer
+        start_time = current_time
     elif (humidity <= min_humidity and temperature <= min_temperature) or (utime.ticks_diff(current_time, start_time) > timeout):
         vent_on = False
         vent_pin.value(0)
